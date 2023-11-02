@@ -56,7 +56,6 @@ class OpenMCActivator:
                 except:
                     total_xs = np.zeros(len(self.ebins_midpoints))
 
-                #total_norm = sum(total_xs*self.norm_mg_flux)
                 total_norm = sum(total_xs*self.norm_mg_flux)
                 microxs_arr[nuclideE,rxn_type] = total_norm 
 
@@ -85,7 +84,7 @@ class OpenMCActivator:
 
         # 4. Define the operator to perform depletion calculation
         materials = openmc.Materials([material])        
-        operator = openmc.deplete.IndependentOperator(materials,microxs,chain_file_path)
+        operator = openmc.deplete.IndependentOperator(materials,microxs,chain_file_path, normalization_mode='source-rate')
 
         # 5. Use the operator to perform depletion
         predictor = openmc.deplete.PredictorIntegrator(operator, timestep_list,

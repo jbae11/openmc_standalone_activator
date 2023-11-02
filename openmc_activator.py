@@ -43,7 +43,6 @@ class OpenMCActivator:
         data_files = os.listdir(openmc_neutron_data_dir)
         data_files = [q for q in data_files if not q.startswith('c_') and '.h5' in q]
         isos = [q.replace('.h5','') for q in data_files]
-        print(isos)
         # kill ones with long suspicious names
         # isos = [q for q in isos if len(''.join([w for w in q if w.isalpha()])) > 2]
         

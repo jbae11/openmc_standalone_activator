@@ -3,6 +3,7 @@ import os
 import numpy as np
 import openmc
 import openmc.deplete
+import pickle
 import h5py
 from openmc.data import atomic_mass, AVOGADRO
 import json
@@ -42,8 +43,9 @@ class OpenMCActivator:
         data_files = os.listdir(openmc_neutron_data_dir)
         data_files = [q for q in data_files if not q.startswith('c_') and '.h5' in q]
         isos = [q.replace('.h5','') for q in data_files]
+        print(isos)
         # kill ones with long suspicious names
-        isos = [q for q in isos if len(''.join([w for w in q if w.isalpha()])) > 2]
+        # isos = [q for q in isos if len(''.join([w for w in q if w.isalpha()])) > 2]
         
         microxs_arr = np.zeros((len(isos),len(mt_list)))
 
@@ -55,8 +57,12 @@ class OpenMCActivator:
                 except:
                     total_xs = np.zeros(len(self.ebins_midpoints))
 
+                #total_norm = sum(total_xs*self.norm_mg_flux)
                 total_norm = sum(total_xs*self.norm_mg_flux)
-                microxs_arr[nuclideE,rxn_type] = total_norm
+                microxs_arr[nuclideE,rxn_type] = total_norm 
+
+        d = {'isos': isos, 'mts': mt_list, 'xs_arr': microxs_arr}
+        pickle.dump(d, open('./collapsed_xs.pkl', 'wb'))
 
 
         # 2. Use scaling factor and timesteps 
@@ -103,7 +109,7 @@ class OpenMCActivator:
                 for iso in isos:
                     time, vals = results.get_atoms(mat='1', nuc=iso)
                     metric_dict[key][iso] = vals
-            
+
             # this 14.0 version
             # wish.com version
             elif metric == 'mass':
